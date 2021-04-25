@@ -1,0 +1,354 @@
+openapi: 3.0.0
+info:
+  description: Adventure API spec for commands and summary
+  version: 0.1.0
+  title: API
+  contact:
+    name: Sasivarnan
+    url: 'http://localhost:8080'
+    email: writemesasivarnan@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /command:
+    post:
+      summary: receives the command and process it
+      description: receives the command and process it to store it in the redis
+      operationId: saveCommand
+      tags:
+        - Command
+      requestBody:
+        description: "Commands placed during the adventure"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommandRequest'
+      responses:
+        '201':
+          description: successfully Command Created
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/CommandResponse'
+        '400':
+          description: >-
+            Unable to provide a version due to invalid or insufficient data
+            provided by the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Client is not permitted to use this operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /command/summary:
+    get:
+      summary: returns the complete summary of the commands which is sent
+      description: returns the complete summary of the commands based on the information in memory
+      operationId: getSummary
+      tags:
+        - command
+      responses:
+        '200':
+          description: successfully received response
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/CommandResponse'
+        '400':
+          description: >-
+            Unable to provide a version due to invalid or insufficient data
+            provided by the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Client is not permitted to use this operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /command/executive/summary:
+    get:
+      summary: returns the total summary of the commands
+      description: returns the total summary of the commands and combined attacks
+      operationId: getExecutiveSummary
+      tags:
+        - command
+      responses:
+        '200':
+          description: successfully received response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutiveSummary'
+        '400':
+          description: >-
+            Unable to provide a version due to invalid or insufficient data
+            provided by the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Client is not permitted to use this operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /command/summary/target :
+    get:
+      summary: returns the summary based on the target
+      description: evaluates the command and returns the summary based on the target
+      operationId: getTargetSummary
+      tags:
+        - command
+      responses:
+        '200':
+          description: successfully received response
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Summary'
+        '400':
+          description: >-
+            Unable to provide a version due to invalid or insufficient data
+            provided by the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Client is not permitted to use this operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /command/summary/weapon:
+    get:
+      summary: returns the summary based on the weapon
+      description: evaluates the command and returns the weapon based on the target
+      operationId: getWeaponSummary
+      tags:
+        - command
+      responses:
+        '200':
+          description: successfully received response
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Summary'
+        '400':
+          description: >-
+            Unable to provide a version due to invalid or insufficient data
+            provided by the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Client is not permitted to use this operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CommandRequest:
+      description: This is the request Command
+      type: object
+      properties:
+        weaponSystem:
+          type: string
+          description: name of the weapon system
+          minLength: 1
+        battleShip:
+          type: string
+          minLength: 1
+          description: name of the battle ship
+        target:
+          type: string
+          minLength: 1
+          description: target name
+        quantity:
+          type: integer
+          description: quantity
+        rate:
+          type: number
+          description: rate
+      required:
+        - weaponSystem
+        - battleShip
+        - target
+        - quantity
+        - rate
+    CommandResponse:
+      type: object
+      properties:
+        commandId:
+          type: string
+          description: unique ID for the commands that are received from multiple comamnders
+        weaponSystem:
+          type: string
+          description: name of the weapon system
+        battleShip:
+          type: string
+          description: name of the battle ship
+        target:
+          type: string
+          description: target name
+        quantity:
+          type: integer
+          description: quantity
+        rate:
+          type: number
+    ExecutiveSummary:
+      type: object
+      properties:
+        totalCommands:
+          type: integer
+          format: int64
+          description: Total number of commands fired
+        totalQuantity:
+          type: integer
+          format: int64
+          description: Total quantity of commands based on target
+        AverageRate:
+          type: number
+          description: Average rate of the commands based on target
+        CombinedAttack:
+          $ref: '#/components/schemas/CombinedAttack'
+    CombinedAttack:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: total combined attack
+        adventure:
+          type: "array"
+          items:
+            $ref: '#/components/schemas/CombinedAttackInfo'
+    CombinedAttackInfo:
+      type: object
+      properties:
+        info:
+          type: string
+          description: combined attack information
+        totalQuantity:
+          type: integer
+          description: Total quantity of commands based on combined attacks
+        AverageRate:
+          type: number
+          description: Average rate of commands based on combined atta
+    Summary:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Category name (WeaponSystem or Target)
+        totalCommands:
+          type: integer
+          description: Total number of commands fired based on target
+        totalQuantity:
+          type: integer
+          description: Total quantity of commands based on target
+        AverageRate:
+          type: number
+          description: Average rate of the commands based on target
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/APIError'
+      required:
+        - error
+      description: An error response
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: A server defined error code that uniquely identifies error
+        message:
+          type: string
+          description: >-
+            A human-readable description of the error encountered while
+            processing the request
+        target:
+          type: string
+          description: The property in question that triggered the error
+        details:
+          type: array
+          description: >-
+            An array of more specific errors that led to the currently reported
+            error
+          items:
+            $ref: '#/components/schemas/APIError'
+        innererror:
+          $ref: '#/components/schemas/InnerError'
+        link:
+          type: string
+          description: A link to relevant documentation for this error
+      required:
+        - code
+        - message
+      description: More specific information about an encountered error
+    InnerError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: A server defined error code that uniquely identifies error
+        innererror:
+          $ref: '#/components/schemas/InnerError'
+      required:
+        - code
+      description: >-
+        An object containing more specific information than the current object
+        about the error.
